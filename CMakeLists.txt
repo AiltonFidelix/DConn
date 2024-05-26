@@ -1,6 +1,11 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
 project(WSLConn VERSION 0.1 LANGUAGES CXX)
+
+add_compile_definitions(
+    VERSION="1.0.0"
+    DATE="26/05/2024"
+)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -20,7 +25,11 @@ set(PROJECT_SOURCES
     src/wslinterface.h
 )
 
-set(PROJECT_UIS
+set(PROJECT_RESOURCES
+    wslconn.qrc
+)
+
+set(PROJECT_FORMS
     src/wslconn.ui
 )
 
@@ -28,12 +37,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(WSLConn
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        ${PROJECT_UIS}
-    )
-else()
-    add_executable(WSLConn
-        ${PROJECT_SOURCES}
-        ${PROJECT_UIS}
+        ${PROJECT_RESOURCES}
+        ${PROJECT_FORMS}
     )
 endif()
 
