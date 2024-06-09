@@ -2,7 +2,7 @@
 #define WSLCONN_H
 
 #include <QMainWindow>
-#include "wslinterface.h"
+#include "wslhandle.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,13 +21,18 @@ protected:
     void showEvent(QShowEvent *event);
 
 private slots:
-    void setDistros(QStringList distros);
-    void setUSBPorts(QStringList ports);
+    void setDistros(QJsonObject json);
+    void setUSBPorts(QHash<QString, QStringList> ports);
     void about();
 
 private:
+    void updateStatus();
+    void attachPort();
+
+private:
     Ui::WSLConn *ui;
-    WSLInterface m_interface;
+    WSLHandle m_handle;
+    OPFactory m_factory;
 };
 
 #endif // WSLCONN_H

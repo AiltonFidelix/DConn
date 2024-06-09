@@ -21,8 +21,13 @@ set(PROJECT_SOURCES
     src/main.cpp
     src/wslconn.cpp
     src/wslconn.h
-    src/wslinterface.cpp
-    src/wslinterface.h
+    src/wslhandle.cpp
+    src/wslhandle.h
+    src/ioperation.h
+    src/opdistros.h
+    src/opdistros.cpp
+    src/opfactory.h
+    src/opfactory.cpp
 )
 
 set(PROJECT_RESOURCES

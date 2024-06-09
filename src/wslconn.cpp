@@ -1,7 +1,10 @@
 #include "wslconn.h"
 #include "./ui_wslconn.h"
 
+#include "opdistros.h"
+
 #include <QMessageBox>
+#include <QJsonArray>
 
 WSLConn::WSLConn(QWidget *parent)
     : QMainWindow(parent)
@@ -13,12 +16,18 @@ WSLConn::WSLConn(QWidget *parent)
     setWindowFlag(Qt::WindowMaximizeButtonHint, false);
 
     connect(ui->actionAbout, &QAction::triggered, this, &WSLConn::about);
-    connect(&m_interface, &WSLInterface::message, ui->pteLogs, &QPlainTextEdit::appendPlainText);
-    connect(&m_interface, &WSLInterface::distros, this, &WSLConn::setDistros);
-    connect(&m_interface, &WSLInterface::usbPorts, this, &WSLConn::setUSBPorts);
+    connect(ui->cbxUsbPorts, &QComboBox::currentIndexChanged, this, &WSLConn::updateStatus);
+    connect(ui->btnAttach, &QPushButton::clicked, this, &WSLConn::attachPort);
+    connect(&m_handle, &WSLHandle::message, ui->pteLogs, &QPlainTextEdit::appendPlainText);
+    // connect(&m_handle, &WSLHandle::distros, this, &WSLConn::setDistros);
+    // connect(&m_handle, &WSLHandle::usbPorts, this, &WSLConn::setUSBPorts);
 
     ui->pteLogs->appendPlainText("Initializing logs...\n");
-    m_interface.start();
+
+    QProcess *process = new QProcess(this);
+
+    m_handle.start(process);
+    m_factory.setProcess(process);
 }
 
 WSLConn::~WSLConn()
@@ -27,15 +36,29 @@ WSLConn::~WSLConn()
 }
 
 void
-WSLConn::setDistros(QStringList distros)
+WSLConn::setDistros(QJsonObject json)
 {
-    ui->cbxDistros->addItems(distros);
+    QJsonValue value = json.value("distros");
+    QJsonArray array = value.toArray();
+
+    qDebug() << value;
+
+    for (QVariant distro : array.toVariantList())
+    {
+        ui->cbxDistros->addItem(distro.toString());
+    }
 }
 
 void
-WSLConn::setUSBPorts(QStringList ports)
+WSLConn::setUSBPorts(QHash<QString, QStringList> ports)
 {
-    ui->cbxUsbPorts->addItems(ports);
+    QHashIterator<QString, QStringList> it(ports);
+
+    while (it.hasNext())
+    {
+        it.next();
+        ui->cbxUsbPorts->addItem(it.key(), it.value());
+    }
 }
 
 void
@@ -48,10 +71,28 @@ WSLConn::about()
 }
 
 void
+WSLConn::updateStatus()
+{
+    QStringList info = ui->cbxUsbPorts->currentData().toStringList();
+    ui->lblShared->setText(info.at(1));
+}
+
+void
+WSLConn::attachPort()
+{
+    QStringList portInfo = ui->cbxUsbPorts->currentData().toStringList();
+    QStringList args = {ui->cbxDistros->currentText(), portInfo.at(0)};
+    m_handle.nextOperation(m_factory.create(OPFactory::Attach, args));
+}
+
+void
 WSLConn::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
 
-    m_interface.nextOperation(WSLInterface::Operation::Distros);
-    m_interface.nextOperation(WSLInterface::Operation::USBPorts);
+    OPDistros *distros = static_cast<OPDistros*>(m_factory.create(OPFactory::Distros));
+    connect(distros, &OPDistros::distros, this, &WSLConn::setDistros);
+    m_handle.nextOperation(distros);
+
+    // m_handle.nextOperation(m_factory.create(OPFactory::USBPorts));
 }
