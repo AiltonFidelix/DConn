@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "wslhandle.h"
+#include "opfactory.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,7 +23,7 @@ protected:
 
 private slots:
     void setDistros(QJsonObject json);
-    void setUSBPorts(QHash<QString, QStringList> ports);
+    void setUSBPorts(QJsonObject json);
     void about();
 
 private:

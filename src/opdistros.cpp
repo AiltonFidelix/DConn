@@ -5,7 +5,7 @@
 OPDistros::OPDistros(QObject *parent)
     : QObject(parent)
 {
-
+    m_isComplete = false;
 }
 
 void
@@ -39,19 +39,24 @@ OPDistros::parser(QString data)
 
     if (distrosList.count() > 0)
     {
-        QJsonObject json;
-        // QJsonValue value;
         QJsonArray array;
 
-        for (QString distro : distrosList)
+        for (const QString &distro : distrosList)
         {
-            QJsonValue value;
-            value = distro;
-            array.append(value);
+            array.append(distro);
         }
 
+        QJsonObject json;
         json.insert("distros", array);
 
         emit distros(json);
+
+        m_isComplete = true;
     }
+}
+
+bool
+OPDistros::isComplete()
+{
+    return m_isComplete;
 }

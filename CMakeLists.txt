@@ -28,6 +28,8 @@ set(PROJECT_SOURCES
     src/opdistros.cpp
     src/opfactory.h
     src/opfactory.cpp
+    src/opusbports.h
+    src/opusbports.cpp
 )
 
 set(PROJECT_RESOURCES
@@ -43,7 +45,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         ${PROJECT_RESOURCES}
-        ${PROJECT_FORMS}
+        ${PROJECT_FORMS} 
     )
 endif()
 

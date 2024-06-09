@@ -1,5 +1,6 @@
 #include "opfactory.h"
 #include "opdistros.h"
+#include "opusbports.h"
 
 OPFactory::OPFactory(QObject *parent)
     : QObject{parent}
@@ -24,6 +25,7 @@ OPFactory::create(Operation operation, QStringList args)
             obj = new OPDistros();
             break;
         case USBPorts:
+            obj = new OPUSBPorts();
             break;
     }
 

@@ -2,6 +2,7 @@
 #include "./ui_wslconn.h"
 
 #include "opdistros.h"
+#include "opusbports.h"
 
 #include <QMessageBox>
 #include <QJsonArray>
@@ -19,8 +20,6 @@ WSLConn::WSLConn(QWidget *parent)
     connect(ui->cbxUsbPorts, &QComboBox::currentIndexChanged, this, &WSLConn::updateStatus);
     connect(ui->btnAttach, &QPushButton::clicked, this, &WSLConn::attachPort);
     connect(&m_handle, &WSLHandle::message, ui->pteLogs, &QPlainTextEdit::appendPlainText);
-    // connect(&m_handle, &WSLHandle::distros, this, &WSLConn::setDistros);
-    // connect(&m_handle, &WSLHandle::usbPorts, this, &WSLConn::setUSBPorts);
 
     ui->pteLogs->appendPlainText("Initializing logs...\n");
 
@@ -38,26 +37,29 @@ WSLConn::~WSLConn()
 void
 WSLConn::setDistros(QJsonObject json)
 {
+    qDebug() << json;
     QJsonValue value = json.value("distros");
     QJsonArray array = value.toArray();
 
     qDebug() << value;
 
-    for (QVariant distro : array.toVariantList())
+    for (const QVariant &distro : array.toVariantList())
     {
         ui->cbxDistros->addItem(distro.toString());
     }
 }
 
 void
-WSLConn::setUSBPorts(QHash<QString, QStringList> ports)
+WSLConn::setUSBPorts(QJsonObject json)
 {
-    QHashIterator<QString, QStringList> it(ports);
+    qDebug() << json;
+    QJsonValue value = json.value("ports");
+    QJsonArray array = value.toArray();
 
-    while (it.hasNext())
+    for (const QVariant &port : array.toVariantList())
     {
-        it.next();
-        ui->cbxUsbPorts->addItem(it.key(), it.value());
+        QStringList info = port.toStringList();
+        ui->cbxUsbPorts->addItem(info.first(), info);
     }
 }
 
@@ -74,7 +76,7 @@ void
 WSLConn::updateStatus()
 {
     QStringList info = ui->cbxUsbPorts->currentData().toStringList();
-    ui->lblShared->setText(info.at(1));
+    ui->lblShared->setText(info.at(2));
 }
 
 void
@@ -94,5 +96,7 @@ WSLConn::showEvent(QShowEvent *event)
     connect(distros, &OPDistros::distros, this, &WSLConn::setDistros);
     m_handle.nextOperation(distros);
 
-    // m_handle.nextOperation(m_factory.create(OPFactory::USBPorts));
+    OPUSBPorts *usbPorts = static_cast<OPUSBPorts*>(m_factory.create(OPFactory::USBPorts));
+    connect(usbPorts, &OPUSBPorts::usbPorts, this, &WSLConn::setUSBPorts);
+    m_handle.nextOperation(usbPorts);
 }

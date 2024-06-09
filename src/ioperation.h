@@ -12,6 +12,9 @@ public:
     virtual void setCommandArgs(QStringList args) = 0;
     virtual void setProcess(QProcess *process) = 0;
     virtual void parser(QString data) = 0;
+    virtual bool isComplete() = 0;
+
+    virtual ~iOperation() {};
 };
 
 #endif // IOPERATION_H
