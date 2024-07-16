@@ -56,7 +56,7 @@ WSLHandle::readyRead()
     output.replace("\\u0000","");
     output.remove(QString("%1>").arg(QCoreApplication::applicationDirPath().replace("/", "\\")));
 
-    emit message(output);
+    emit message(output.trimmed());
 
     bool opIsComplete = true;
 

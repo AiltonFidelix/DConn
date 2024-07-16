@@ -24,12 +24,18 @@ set(PROJECT_SOURCES
     src/wslhandle.cpp
     src/wslhandle.h
     src/ioperation.h
+    src/opattach.h
+    src/opattach.cpp
     src/opdistros.h
     src/opdistros.cpp
     src/opfactory.h
     src/opfactory.cpp
     src/opusbports.h
     src/opusbports.cpp
+    src/settings.h
+    src/settings.cpp
+    src/opdetach.h
+    src/opdetach.cpp
 )
 
 set(PROJECT_RESOURCES
@@ -38,6 +44,7 @@ set(PROJECT_RESOURCES
 
 set(PROJECT_FORMS
     src/wslconn.ui
+    src/settings.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -45,7 +52,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         ${PROJECT_RESOURCES}
-        ${PROJECT_FORMS} 
+        ${PROJECT_FORMS}
     )
 endif()
 

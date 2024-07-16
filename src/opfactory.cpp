@@ -1,4 +1,6 @@
 #include "opfactory.h"
+#include "opattach.h"
+#include "opdetach.h"
 #include "opdistros.h"
 #include "opusbports.h"
 
@@ -20,6 +22,10 @@ OPFactory::create(Operation operation, QStringList args)
     switch (operation)
     {
         case Attach:
+            obj = new OPAttach();
+            break;
+        case Detach:
+            obj = new OPDetach();
             break;
         case Distros:
             obj = new OPDistros();

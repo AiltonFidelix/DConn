@@ -7,18 +7,18 @@
 
 class OPFactory : public QObject
 {
-    Q_OBJECT
-public:
-    enum Operation { Attach, Distros, USBPorts };
+        Q_OBJECT
+    public:
+        enum Operation { Attach, Detach, Distros, USBPorts };
 
-    explicit OPFactory(QObject *parent = nullptr);
+        explicit OPFactory(QObject *parent = nullptr);
 
-    void setProcess(QProcess *process);
+        void setProcess(QProcess *process);
 
-    iOperation *create(Operation operation, QStringList args = QStringList());
+        iOperation *create(Operation operation, QStringList args = QStringList());
 
-private:
-    QProcess *m_process;
+    private:
+        QProcess *m_process;
 };
 
 #endif // OPFACTORY_H

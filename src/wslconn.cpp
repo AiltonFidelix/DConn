@@ -1,21 +1,28 @@
 #include "wslconn.h"
-#include "./ui_wslconn.h"
+#include "ui_wslconn.h"
+#include "settings.h"
 
+#include "opattach.h"
+#include "opdetach.h"
 #include "opdistros.h"
 #include "opusbports.h"
 
 #include <QMessageBox>
 #include <QJsonArray>
+#include <QTimer>
 
 WSLConn::WSLConn(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::WSLConn)
+    : QMainWindow(parent),
+    ui(new Ui::WSLConn),
+    m_currentItem(0),
+    m_detach(false)
 {
     ui->setupUi(this);
 
     setWindowFlag(Qt::WindowMinimizeButtonHint, false);
     setWindowFlag(Qt::WindowMaximizeButtonHint, false);
 
+    connect(ui->actionSettings, &QAction::triggered, this, &WSLConn::settings);
     connect(ui->actionAbout, &QAction::triggered, this, &WSLConn::about);
     connect(ui->cbxUsbPorts, &QComboBox::currentIndexChanged, this, &WSLConn::updateStatus);
     connect(ui->btnAttach, &QPushButton::clicked, this, &WSLConn::attachPort);
@@ -37,7 +44,8 @@ WSLConn::~WSLConn()
 void
 WSLConn::setDistros(QJsonObject json)
 {
-    qDebug() << json;
+    ui->cbxDistros->clear();
+
     QJsonValue value = json.value("distros");
     QJsonArray array = value.toArray();
 
@@ -52,6 +60,8 @@ WSLConn::setDistros(QJsonObject json)
 void
 WSLConn::setUSBPorts(QJsonObject json)
 {
+    ui->cbxUsbPorts->clear();
+
     qDebug() << json;
     QJsonValue value = json.value("ports");
     QJsonArray array = value.toArray();
@@ -61,6 +71,8 @@ WSLConn::setUSBPorts(QJsonObject json)
         QStringList info = port.toStringList();
         ui->cbxUsbPorts->addItem(info.first(), info);
     }
+
+    ui->cbxUsbPorts->setCurrentIndex(m_currentItem);
 }
 
 void
@@ -73,18 +85,60 @@ WSLConn::about()
 }
 
 void
+WSLConn::settings()
+{
+    Settings settings(this);
+    settings.exec();
+}
+
+void
+WSLConn::showPortsInfo()
+{
+    auto updatePorts = [this] () -> void
+    {
+        OPUSBPorts *usbPorts = static_cast<OPUSBPorts*>(m_factory.create(OPFactory::USBPorts));
+        connect(usbPorts, &OPUSBPorts::usbPorts, this, &WSLConn::setUSBPorts);
+        m_handle.nextOperation(usbPorts);
+    };
+
+    QTimer::singleShot(1000, this, updatePorts);
+}
+
+void
 WSLConn::updateStatus()
 {
     QStringList info = ui->cbxUsbPorts->currentData().toStringList();
-    ui->lblShared->setText(info.at(2));
+
+    if (info.count() == 3)
+    {
+        m_detach = (info.at(2) == "Attached");
+        ui->lblShared->setText(info.at(2));
+        ui->btnAttach->setText(m_detach ? "Detach" : "Attach");
+    }
 }
 
 void
 WSLConn::attachPort()
 {
     QStringList portInfo = ui->cbxUsbPorts->currentData().toStringList();
-    QStringList args = {ui->cbxDistros->currentText(), portInfo.at(0)};
-    m_handle.nextOperation(m_factory.create(OPFactory::Attach, args));
+    QStringList args = {ui->cbxDistros->currentText(), portInfo.at(1)};
+
+    m_currentItem = ui->cbxUsbPorts->currentIndex();
+
+    if (m_detach)
+    {
+        OPDetach *detach = static_cast<OPDetach*>(m_factory.create(OPFactory::Detach, args));
+        connect(detach, &OPDetach::detached, this, &WSLConn::showPortsInfo);
+
+        m_handle.nextOperation(detach);
+    }
+    else
+    {
+        OPAttach *attach = static_cast<OPAttach*>(m_factory.create(OPFactory::Attach, args));
+        connect(attach, &OPAttach::attached, this, &WSLConn::showPortsInfo);
+
+        m_handle.nextOperation(attach);
+    }
 }
 
 void
@@ -96,7 +150,5 @@ WSLConn::showEvent(QShowEvent *event)
     connect(distros, &OPDistros::distros, this, &WSLConn::setDistros);
     m_handle.nextOperation(distros);
 
-    OPUSBPorts *usbPorts = static_cast<OPUSBPorts*>(m_factory.create(OPFactory::USBPorts));
-    connect(usbPorts, &OPUSBPorts::usbPorts, this, &WSLConn::setUSBPorts);
-    m_handle.nextOperation(usbPorts);
+    showPortsInfo();
 }
