@@ -1,75 +1,91 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(WSLConn VERSION 0.1 LANGUAGES CXX)
+project(DConn VERSION 1.0.0 LANGUAGES CXX)
 
 add_compile_definitions(
-    VERSION="1.0.0"
-    DATE="26/05/2024"
+    VERSION="${PROJECT_VERSION}"
+    DATE="15/11/2026"
+    USBIPD_VERSION="4.0.0"
 )
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
-set(PROJECT_SOURCES
-    src/main.cpp
-    src/wslconn.cpp
-    src/wslconn.h
-    src/wslhandle.cpp
-    src/wslhandle.h
-    src/ioperation.h
-    src/opattach.h
-    src/opattach.cpp
-    src/opdistros.h
-    src/opdistros.cpp
-    src/opfactory.h
-    src/opfactory.cpp
-    src/opusbports.h
-    src/opusbports.cpp
-    src/settings.h
-    src/settings.cpp
-    src/opdetach.h
-    src/opdetach.cpp
+set(HEADERS
+    sources/command/command.hpp
+    sources/command/commandattach.hpp
+    sources/command/commandbind.hpp
+    sources/command/commanddetach.hpp
+    sources/command/commanddevices.hpp
+    sources/command/commandenum.hpp
+    sources/command/commandfactory.hpp
+    sources/command/commandobserver.hpp
+    sources/command/commandservice.hpp
+    sources/command/commandversion.hpp
+    sources/usbipd/usbipd.hpp
+    sources/usbipd/usbipddeviceinfo.hpp
+    sources/usbipd/usbipdstateenum.hpp
+    sources/usbipd/usbipdstatehelper.hpp
+    sources/dconn.hpp
 )
 
-set(PROJECT_RESOURCES
-    wslconn.qrc
+set(SOURCES
+    sources/command/commandattach.cpp
+    sources/command/commandbind.cpp
+    sources/command/commanddetach.cpp
+    sources/command/commanddevices.cpp
+    sources/command/commandservice.cpp
+    sources/command/commandversion.cpp
+    sources/usbipd/usbipd.cpp
+    sources/usbipd/usbipdstatehelper.cpp
+    sources/dconn.cpp
+    sources/main.cpp
 )
 
-set(PROJECT_FORMS
-    src/wslconn.ui
-    src/settings.ui
+set(RESOURCES
+    dconn.qrc
+)
+
+set(FORMS
+    sources/dconn.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(WSLConn
+    qt_add_executable(${PROJECT_NAME}
         MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-        ${PROJECT_RESOURCES}
-        ${PROJECT_FORMS}
+        ${HEADERS}
+        ${SOURCES}
+        ${RESOURCES}
+        ${FORMS}
     )
 endif()
 
-target_link_libraries(WSLConn PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/command
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/usbipd
+)
 
-set_target_properties(WSLConn PROPERTIES
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
     ${BUNDLE_ID_OPTION}
     WIN32_EXECUTABLE TRUE
 )
 
 include(GNUInstallDirs)
-install(TARGETS WSLConn
+install(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(WSLConn)
+    qt_finalize_executable(${PROJECT_NAME})
 endif()
