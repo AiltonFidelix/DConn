@@ -19,7 +19,7 @@ jobs:
           cmake -B build -G Ninja
           cmake --build build --config Release
           cmake --install build --config Release --prefix "$GITHUB_WORKSPACE/build/release"
-          bash copyddls.sh
+          bash copydlls.sh "$GITHUB_WORKSPACE/build/release/bin"
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4

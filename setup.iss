@@ -25,14 +25,14 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 Name: quicklaunchicon; Description: {cm:CreateQuickLaunchIcon}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked
 
 [Files]
-Source: build\release\{#DConnExeName}; DestDir: {app}; DestName: {#DConnExeName}; Flags: ignoreversion
-Source: build\release\Qt6Core.dll; DestDir: {app}; Flags: ignoreversion
-Source: build\release\Qt6Gui.dll; DestDir: {app}; Flags: ignoreversion
-Source: build\release\Qt6Widgets.dll; DestDir: {app}; Flags: ignoreversion
-Source: build\release\qwindows.dll; DestDir: {app}\platforms\; Flags: ignoreversion
-Source: build\release\qmodernwindowsstyle.dll; DestDir: {app}\styles\; Flags: ignoreversion
-Source: build\release\libgcc_s_seh-1.dll; DestDir: {app}; Flags: ignoreversion
-Source: build\release\libstdc++-6.dll; DestDir: {app}; Flags: ignoreversion
+Source: build\release\bin\{#DConnExeName}; DestDir: {app}; DestName: {#DConnExeName}; Flags: ignoreversion
+Source: build\release\bin\Qt6Core.dll; DestDir: {app}; Flags: ignoreversion
+Source: build\release\bin\Qt6Gui.dll; DestDir: {app}; Flags: ignoreversion
+Source: build\release\bin\Qt6Widgets.dll; DestDir: {app}; Flags: ignoreversion
+Source: build\release\bin\qwindows.dll; DestDir: {app}\platforms\; Flags: ignoreversion
+Source: build\release\bin\qmodernwindowsstyle.dll; DestDir: {app}\styles\; Flags: ignoreversion
+Source: build\release\bin\libgcc_s_seh-1.dll; DestDir: {app}; Flags: ignoreversion
+Source: build\release\bin\libstdc++-6.dll; DestDir: {app}; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#DConnName}"; Filename: {app}\{#DConnExeName}
