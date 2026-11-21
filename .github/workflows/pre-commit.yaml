@@ -47,9 +47,10 @@ jobs:
             winget install --id JRSoftware.InnoSetup -e --silent --accept-package-agreements --accept-source-agreements
             $env:Path += ";${env:ProgramFiles(x86)}\Inno Setup 6"
           }
+          New-Item -ItemType Directory -Force -Path "installer\Output" | Out-Null
           ISCC.exe ".\installer\setup.iss"
 
-      - name: Upload installer
+      - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
