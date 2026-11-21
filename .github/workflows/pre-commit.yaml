@@ -1,0 +1,56 @@
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: dalogik/qt-docker:qt6.8.0-win64-mingw
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and install Qt app
+        run: |
+          mkdir -p /tmp/wineprefix
+          export WINEPREFIX=/tmp/wineprefix
+          cmake -B build -G Ninja
+          cmake --build build --config Release
+          cmake --install build --config Release --prefix "$GITHUB_WORKSPACE/build/release"
+          bash copyddls.sh
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: qt-release
+          path: build/release/
+          retention-days: 1
+
+  package:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: qt-release
+          path: build/release
+
+      - name: Build Inno Setup installer
+        shell: pwsh
+        run: |
+          if (-not (Get-Command ISCC.exe -ErrorAction SilentlyContinue)) {
+            winget install --id JRSoftware.InnoSetup -e --silent --accept-package-agreements --accept-source-agreements
+            $env:Path += ";${env:ProgramFiles(x86)}\Inno Setup 6"
+          }
+          ISCC.exe ".\installer\setup.iss"
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: installer/Output/*.exe

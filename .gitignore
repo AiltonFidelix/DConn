@@ -1,3 +1,7 @@
+# Folders
 build
 .qtcreator
+
+# Files
 CMakeLists.txt.user
+*.exe
