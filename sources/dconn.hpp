@@ -22,6 +22,7 @@ public:
 private slots:
     void onAbout();
     void onAction();
+    void onRefresh();
     void onAttached(const QString &busId);
     void onDetached(const QString &busId);
     void onDevicesReady(const USBIPDDeviceInfoList &devices);

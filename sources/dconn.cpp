@@ -15,16 +15,17 @@ DConn::DConn(QWidget *parent)
     setWindowFlag(Qt::WindowMinimizeButtonHint, false);
     setWindowFlag(Qt::WindowMaximizeButtonHint, false);
 
-    connect(_ui->actionAbout, &QAction::triggered, this, &DConn::onAbout);
-    connect(_ui->cbDevices, &QComboBox::currentIndexChanged, this, &DConn::onSelectDevice);
-    connect(_ui->btAction, &QPushButton::clicked, this, &DConn::onAction);
+    QObject::connect(_ui->actionAbout, &QAction::triggered, this, &DConn::onAbout);
+    QObject::connect(_ui->cbDevices, &QComboBox::currentIndexChanged, this, &DConn::onSelectDevice);
+    QObject::connect(_ui->btAction, &QPushButton::clicked, this, &DConn::onAction);
+    QObject::connect(_ui->btRefresh, &QPushButton::clicked, this, &DConn::onRefresh);
 
-    connect(&_service, &CommandService::deviceAttached, this, &DConn::onAttached);
-    connect(&_service, &CommandService::deviceDetached, this, &DConn::onDetached);
-    connect(&_service, &CommandService::devicesReady, this, &DConn::onDevicesReady);
-    connect(&_service, &CommandService::errorOccurred, this, &DConn::onErrorOccurred);
-    connect(&_service, &CommandService::systemReady, this, &DConn::onShowDevices);
-    connect(&_service, &CommandService::notReady, this, &DConn::onNotReady);
+    QObject::connect(&_service, &CommandService::deviceAttached, this, &DConn::onAttached);
+    QObject::connect(&_service, &CommandService::deviceDetached, this, &DConn::onDetached);
+    QObject::connect(&_service, &CommandService::devicesReady, this, &DConn::onDevicesReady);
+    QObject::connect(&_service, &CommandService::errorOccurred, this, &DConn::onErrorOccurred);
+    QObject::connect(&_service, &CommandService::systemReady, this, &DConn::onShowDevices);
+    QObject::connect(&_service, &CommandService::notReady, this, &DConn::onNotReady);
 
     disableActions();
 }
@@ -60,6 +61,13 @@ void DConn::onAction() {
     } else {
         _service.attach(device);
     }
+}
+
+void DConn::onRefresh() {
+
+    disableActions();
+
+    _service.showDevices();
 }
 
 void DConn::onAttached(const QString &busId) {
