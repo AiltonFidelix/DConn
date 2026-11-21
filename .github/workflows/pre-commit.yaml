@@ -47,6 +47,13 @@ jobs:
             winget install --id JRSoftware.InnoSetup -e --silent --accept-package-agreements --accept-source-agreements
             $env:Path += ";${env:ProgramFiles(x86)}\Inno Setup 6"
           }
+
+          Write-Host "=== Locate .iss files ==="
+          Get-ChildItem -Filter "*.iss" -Recurse
+
+          Write-Host "=== Contents of build\release ==="
+          Get-ChildItem -Recurse "build\release" -ErrorAction SilentlyContinue | Select-Object FullName
+
           New-Item -ItemType Directory -Force -Path "installer\Output" | Out-Null
           ISCC.exe ".\installer\setup.iss"
 
