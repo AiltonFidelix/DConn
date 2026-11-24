@@ -4,7 +4,6 @@ project(DConn VERSION 1.0.0 LANGUAGES CXX)
 
 add_compile_definitions(
     VERSION="${PROJECT_VERSION}"
-    DATE="11-20-2026"
     MIN_USBIPD_VERSION="4.0.0"
 )
 
