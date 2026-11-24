@@ -16,6 +16,7 @@ AppPublisher=Ailton Fidelix
 AppPublisherURL=https://github.com/AiltonFidelix/DConn
 AppSupportURL=https://github.com/AiltonFidelix/DConn
 AppUpdatesURL=https://github.com/AiltonFidelix/DConn
+LicenseFile=licenses.txt
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
