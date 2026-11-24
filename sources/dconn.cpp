@@ -43,11 +43,10 @@ void DConn::start() {
 void DConn::onAbout() {
 
     QMessageBox::information(this, QStringLiteral("About DConn"),
-                             QStringLiteral("<b>Author:</b> Ailton Fidelix<br>"
-                                            "<b>Version:</b> %1<br>"
-                                            "<b>Release date:</b> %2"
-                                            "<br><p>DConn is an app for connecting USB devices to WSL.</p>")
-                                 .arg(VERSION, DATE));
+                             QStringLiteral(R"(<b>DConn %0</b>
+                                            <p>DConn is an app for connecting USB devices to WSL.</p>
+                                            )")
+                                 .arg(VERSION));
 }
 
 void DConn::onAction() {
