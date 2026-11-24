@@ -1,9 +1,9 @@
-name: pre-commit
+name: release
 
 on:
-  pull_request:
   push:
-    branches: [main]
+    tags:
+      - "v*"
 
 jobs:
   build:
@@ -31,6 +31,8 @@ jobs:
   package:
     needs: build
     runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -55,3 +57,10 @@ jobs:
           name: windows-installer
           path: Output/*.exe
           if-no-files-found: error
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: Output/*.exe
+          generate_release_notes: true
+          fail_on_unmatched_files: true
