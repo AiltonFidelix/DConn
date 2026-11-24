@@ -140,7 +140,7 @@ void DConn::onShowDevices() {
 
 void DConn::onNotReady() {
 
-    QMessageBox::warning(this, QStringLiteral("Error"), QStringLiteral("<p>usbipd version >= %0 is required.</p>").arg(USBIPD_VERSION));
+    QMessageBox::warning(this, QStringLiteral("Error"), QStringLiteral("<p>usbipd version >= %0 is required.</p>").arg(MIN_USBIPD_VERSION));
 
     exit(0);
 }

@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QProcess>
+#include <QRegularExpression>
 
 CommandVersion::CommandVersion(CommandObserver *observer)
     : _observer{observer} {
@@ -50,12 +51,30 @@ void CommandVersion::run() {
 
     if (_observer) {
 
-        if (output.startsWith(USBIPD_VERSION)) {
+        const QVersionNumber minVersion = QVersionNumber::fromString(QString::fromLatin1(MIN_USBIPD_VERSION));
+        const QVersionNumber detectedVersion = parseVersion(output);
+
+        if (!minVersion.isNull() && !detectedVersion.isNull() && (detectedVersion >= minVersion)) {
             _observer->notifySystemReady();
         } else {
             _observer->notifyNotReady();
         }
     }
+}
+
+QVersionNumber CommandVersion::parseVersion(const QByteArray &output) {
+
+    const QString text = QString::fromUtf8(output).trimmed();
+
+    static const QRegularExpression re(QStringLiteral(R"((\d+(?:\.\d+){1,3}))"));
+
+    const QRegularExpressionMatch match = re.match(text);
+
+    if (!match.hasMatch()) {
+        return {};
+    }
+
+    return QVersionNumber::fromString(match.captured(1));
 }
 
 void CommandVersion::notifyError(const QString &error) {

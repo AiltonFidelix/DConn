@@ -1,6 +1,8 @@
 #ifndef COMMANDVERSION_H
 #define COMMANDVERSION_H
 
+#include <QVersionNumber>
+
 #include "command.hpp"
 #include "commandobserver.hpp"
 
@@ -13,6 +15,7 @@ public:
 private:
     CommandObserver *_observer;
 
+    QVersionNumber parseVersion(const QByteArray &output);
     void notifyError(const QString &error);
 };
 
