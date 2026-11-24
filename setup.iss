@@ -33,6 +33,7 @@ Source: build\release\bin\qwindows.dll; DestDir: {app}\platforms\; Flags: ignore
 Source: build\release\bin\qmodernwindowsstyle.dll; DestDir: {app}\styles\; Flags: ignoreversion
 Source: build\release\bin\libgcc_s_seh-1.dll; DestDir: {app}; Flags: ignoreversion
 Source: build\release\bin\libstdc++-6.dll; DestDir: {app}; Flags: ignoreversion
+Source: license.txt; DestDir: {app}; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#DConnName}"; Filename: {app}\{#DConnExeName}
