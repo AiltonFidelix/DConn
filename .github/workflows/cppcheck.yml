@@ -1,0 +1,31 @@
+name: cppcheck
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  cppcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        run: |
+          if ! command -v cppcheck >/dev/null 2>&1; then
+            apt-get update && apt-get install -y --no-install-recommends cppcheck
+          fi
+          cppcheck --version
+
+      - name: Run cppcheck
+        run: |
+          cppcheck \
+            --platform=win64 \
+            --enable=warning,performance,portability \
+            --inconclusive \
+            -i build \
+            --suppress=missingIncludeSystem \
+            --suppress=unknownMacro \
+            --error-exitcode=1 \
+            sources
